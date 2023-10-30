@@ -50,7 +50,6 @@ def load_model(code_dir):
    phase1_model = tf.keras.models.load_model(os.path.join(code_dir, "phase-1.h5"))
    print("loaded model...")
 
-   # Returning a string with value "dummy" as the model.
    return phase1_model
 
 
@@ -91,6 +90,8 @@ def read_input_data(input_binary_data):
    densenet_x, densenet_y = data_constructor(fnames_test, classes_test, dim_size=(128,128) , index  = [0] , bboxes = bboxes_test)
    densenet_x = tf.keras.applications.densenet.preprocess_input(densenet_x)
 
+   print(type(densenet_x))
+
    return densenet_x
 
 
@@ -112,44 +113,53 @@ def read_input_data(input_binary_data):
 #    return data
 #
 #
-def score(data, model, **kwargs):
-   
+def score_unstructured(model, data, **kwargs):
+
    """
    This hook can be implemented to adjust logic in the scoring mode.
 
-   This method should return predictions as a dataframe with the following format:
-
-   Binary Classification:
-   Must have columns for each class label with floating-point class probabilities as values.
-   Each row should sum to 1.0
-
-   Regression:
-   Must have a single column called "Predictions" with numerical values
-
-   This hook is only needed if you would like to use drum with a framework not natively
-   supported by the tool.
-
-   :param data: the dataframe to make predictions against. If transform is supplied, data
-       will be the transformed data.
-   :param model: is the deserialized model loaded by drum or by load_model hook, if supplied
-   :param kwargs: additional keyword arguments to the function. If model is binary classification,
-   positive_class_label and negative_class_label will be provided in kwargs. If the model is multiclass
-   classification (at least 3 classes), a class_labels list will be provided as a parameter.
-   :returns: a dataframe, see documentation above on the structure of the dataframe to return.
    """
+
+   def load_files(binary_data):
+
+      if os.path.exists('received'):
+         shutil.rmtree('received')
+
+      os.makedirs('received/labels')
+      os.makedirs('received/images')
+      
+
+      with zipfile.ZipFile(io.BytesIO(binary_data), "r") as zipf:
+         zipf.extractall("received")
+      
+      image_path = 'received/image.png'
+      label_path = 'received/label.txt'
+      dest_image_folder = 'received/images/'
+      dest_label_folder = 'received/labels/'
+
+      shutil.move(image_path, dest_image_folder)
+      shutil.move(label_path, dest_label_folder)
+   
+   load_files(data)
+   fnames_test, classes_test , bboxes_test = load_labels(label_file='received/labels/label.txt', image_folderpath='received/images/')
+   densenet_x, densenet_y = data_constructor(fnames_test, classes_test, dim_size=(128,128) , index  = [0] , bboxes = bboxes_test)
+   data = tf.keras.applications.densenet.preprocess_input(densenet_x)
+
+
    pred = model.predict(data)
    pred = np.rint(pred).astype("int")
    pred = pred.reshape(1)
-   print(pred)
 
-   if pred == 1:
-        data = {'0': [0.0], '1': [1.0]}
+
+   if pred == [0]:
+      pred = "0: COVID-Free"
+   elif pred == [1]:
+      pred = "1: Infected"
    else:
-      data = {'0': [1.0], '1': [0.0]}
+      pred = "undefined"
 
-   df = pd.DataFrame(data)
 
-   return df
+   return pred
 
 
 #def post_process(predictions, model):

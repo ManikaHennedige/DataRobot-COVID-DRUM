@@ -65,34 +65,34 @@ def read_input_data(input_binary_data):
    """
 
    
-   def load_files(binary_data):
+   # def load_files(binary_data):
 
-      if os.path.exists('received'):
-         shutil.rmtree('received')
+   #    if os.path.exists('received'):
+   #       shutil.rmtree('received')
 
-      os.makedirs('received/labels')
-      os.makedirs('received/images')
+   #    os.makedirs('received/labels')
+   #    os.makedirs('received/images')
       
 
-      with zipfile.ZipFile(io.BytesIO(binary_data), "r") as zipf:
-         zipf.extractall("received")
+   #    with zipfile.ZipFile(io.BytesIO(binary_data), "r") as zipf:
+   #       zipf.extractall("received")
       
-      image_path = 'received/image.png'
-      label_path = 'received/label.txt'
-      dest_image_folder = 'received/images/'
-      dest_label_folder = 'received/labels/'
+   #    image_path = 'received/image.png'
+   #    label_path = 'received/label.txt'
+   #    dest_image_folder = 'received/images/'
+   #    dest_label_folder = 'received/labels/'
 
-      shutil.move(image_path, dest_image_folder)
-      shutil.move(label_path, dest_label_folder)
+   #    shutil.move(image_path, dest_image_folder)
+   #    shutil.move(label_path, dest_label_folder)
    
-   load_files(input_binary_data)
-   fnames_test, classes_test , bboxes_test = load_labels(label_file='received/labels/label.txt', image_folderpath='received/images/')
-   densenet_x, densenet_y = data_constructor(fnames_test, classes_test, dim_size=(128,128) , index  = [0] , bboxes = bboxes_test)
-   densenet_x = tf.keras.applications.densenet.preprocess_input(densenet_x)
+   # load_files(input_binary_data)
+   # fnames_test, classes_test , bboxes_test = load_labels(label_file='received/labels/label.txt', image_folderpath='received/images/')
+   # densenet_x, densenet_y = data_constructor(fnames_test, classes_test, dim_size=(128,128) , index  = [0] , bboxes = bboxes_test)
+   # densenet_x = tf.keras.applications.densenet.preprocess_input(densenet_x)
 
-   print(type(densenet_x))
+   # print(type(densenet_x))
 
-   return densenet_x
+   # return densenet_x
 
 
 

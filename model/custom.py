@@ -42,7 +42,6 @@ def load_model(code_dir):
     :returns: Object containing the model - the predict hook will get this object as a parameter
     """
 
-    # Returning a string with value "dummy" as the model.
     model_path = "phase-1.h5"
     model = tf.keras.models.load_model(os.path.join(code_dir, model_path))
 
@@ -63,9 +62,6 @@ def read_input_data(input_binary_data):
     bytestream = io.BytesIO(input_binary_data)
     df = pd.read_csv(bytestream)
 
-    # print(df)
-
-    # return dataframe
     return df
 
 
@@ -87,9 +83,7 @@ def transform(data, model):
 
     DIM = (128,128)
 
-    # print(data['img'])
-
-    data['img'] = data['img'].apply(lambda x: PIL.Image.open(io.BytesIO(base64.b64decode(x))))
+    data['img'] = data['img'].apply(lambda x: PIL.Image.open(io.BytesIO(base64.b64decode(x[2:-1])) if x.startswith("b'") and x.endswith("'") else PIL.Image.open(io.BytesIO(base64.b64decode(x))))) # sometimes the dataframe is sent directly 
     data['img'] = data['img'].apply(lambda x: cv2.cvtColor(np.array(x), cv2.COLOR_BGR2RGB))
     data['img'] = data.apply(lambda x: x['img'][x['y1']:x['y2'],x['x1']:x['x2']], axis=1)
     data['img'] = data['img'].apply(lambda x: cv2.resize(x, DIM, interpolation=cv2.INTER_AREA))
@@ -121,7 +115,6 @@ def score(data, model, **kwargs):
     classification (at least 3 classes), a class_labels list will be provided as a parameter.
     :returns: a dataframe, see documentation above on the structure of the dataframe to return.
     """
-    print(kwargs)
 
     data = densenet.preprocess_input(np.array(data['img'].to_list()))
     data = pd.DataFrame(model.predict(data), columns=['1'])

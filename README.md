@@ -36,7 +36,7 @@ DRUM can be installed from a Linux terminal (or WSL on Windows) by running the f
 ### Running the custom model in the custom environment in server mode (supporting real-time predictions)
 Run the following command to run the model using DRUM inside a Docker environment that DRUM creates using the Docker context files provided in the Environment/ folder:
 
-```drum server --code-dir model_2/ --target-type binary --positive-class-label '1' --negative-class-label '0' --address localhost:6789 --docker environment```
+```drum server --code-dir model/ --target-type binary --positive-class-label '1' --negative-class-label '0' --address localhost:6789 --docker environment```
 
 #### address
 The port number is up to user's discretion. In this case the server is running on localhost:6789

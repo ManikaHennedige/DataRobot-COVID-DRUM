@@ -2,7 +2,6 @@ import pandas as pd
 from multiprocessing.pool import ThreadPool
 import requests
 import argparse
-from load import load_data
 
 # below should be uncommented for production
 
@@ -31,15 +30,15 @@ def multi_threaded_batch_processing(df, pred_url, token):
     for i, df_chunk in enumerate(df):
         async_result = pool.apply_async(rtpred, (pred_url, df_chunk.to_csv(), token))
         threads.append(async_result)
-        print(async_result)
+        # print(async_result)
 
     for thread in threads:
-        print(thread.get())
+        print(thread.get().text)
 
 def main():
     parser = argparse.ArgumentParser(description='Example program with flag arguments')
     parser.add_argument('-m', '--mode', default='single', help='Specify the real-time prediction mode. Specify "single" for single-threaded processing, or "multi" for multithreaded processing')
-    parser.add_argument('-p', '--path', default='data/prepared_data.txt', help='Specify the path to the .txt file containing the data')
+    parser.add_argument('-p', '--path', default='data/prepared_data.csv', help='Specify the path to the .txt file containing the data')
     parser.add_argument('-d', '--development', action='store_true', help='Specify whether development mode should be enabled')
     parser.add_argument('-c', '--chunksize', default='1', help='Specify the size of the chunk to be used such that each chunk would be less than 50MB')
 
@@ -59,7 +58,7 @@ def main():
 
     token = 'NjUzZjYyNjRhZTIzYTc4NWU0MTg0YmQ4OkdJaThFU25NbWg1bmtFSENORVB3TkpVUlFvZG4vT01QQmh4NmNhdy9Nam89'
     endpoint = 'app.imda-tal-ent.sg.datarobot.com'
-    deployment_id = "653f753308ddc534ae184bf9"
+    deployment_id = "655ac667351611d5b8184ac1"
 
     if development:
         pred_url = 'http://localhost:6789/predict'

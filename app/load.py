@@ -2,6 +2,7 @@ import base64
 import os
 import pandas as pd
 import hashlib
+import argparse
 
 """
     This is a sample application script that highlights the preprocessing steps needed for image processing using a DataRobot hosted model.
@@ -45,19 +46,38 @@ def generate_data(file_dir='train', img_dir='data'):
     actual_df.to_csv('data/' + file_dir + '/actual_data.csv', index=False)
 
 def join_files(file_dir):
+    """Function to join the created 'prepared_data' and 'actual_data' based on the 'id' column
+
+    Args:
+        file_dir (string): folder located inside the 'data' directory containing the files to be joined
     """
-        Function to join the prepared_data.csv and actual_data.csv files that are located inside the 'data/training' folder
-    """
-    # Load CSV files into pandas dataframes
+    # open the csv files based on the provided file_dir
     file1 = pd.read_csv('data/' + file_dir + '/prepared_data.csv')
     file2 = pd.read_csv('data/' + file_dir + '/actual_data.csv')
 
-    # Perform inner join based on the 'ID' column
+    # inner join based on 'id' column
     merged_data = pd.merge(file1, file2, on='id', how='inner')
 
-    # Save the merged data to a new CSV file
+    # save the tables to a new 'merged_data.csv'
     merged_data.to_csv('data/' + file_dir + '/merged_file.csv', index=False)
 
+
+def main():
+    parser = argparse.ArgumentParser(description='Generate prediction, actual and merged data in csv format')
+    parser.add_argument('-p', '--path', help='Specify the subfolder inside the "app/data" directory containing the relevant "data.txt" file. For example, specifying "test" indicates that the "data.txt" file is located inside the "data/test" folder')
+    parser.add_argument('-i', '--imgpath', help='Specify the directory where all the images are stored')
+    
+    args = parser.parse_args()
+    file_dir = args.path
+    img_dir = args.imgpath
+
+    print(f"Chosen data.txt directory: data/{file_dir}")
+    print(f"Chosen image directory: {img_dir}")
+
+
+    generate_data(file_dir=file_dir, img_dir="D:/Downloads/COVID_Data/2A_images")
+    join_files(file_dir=file_dir)
+
+
 if __name__ == '__main__':
-    generate_data(file_dir="test_v2", img_dir="D:/Downloads/COVID_Data/2A_images")
-    join_files(file_dir='test_v2')
+    main()

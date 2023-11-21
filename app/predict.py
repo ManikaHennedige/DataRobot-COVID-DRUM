@@ -2,10 +2,21 @@ import pandas as pd
 from multiprocessing.pool import ThreadPool
 import requests
 import argparse
+from dotenv import dotenv_values
 
-# below should be uncommented for production
+
 
 def rtpred(pred_url, data, token):
+    """Function calling the endpoint and sending the request to perform a real time prediction on provided data
+
+    Args:
+        pred_url (string): URL endpoint for the DataRobot deployment
+        data (pd.DataFrame): DataFrame containing test data to be predicted on.
+        token (string): API token required for calling the DataRobot API
+
+    Returns:
+        Request: Request object containing prediction results
+    """
     response = requests.post(
         url=pred_url, 
         headers={
@@ -17,49 +28,66 @@ def rtpred(pred_url, data, token):
     return response
 
 def single_threaded_batch_processing(df, pred_url, token):
-    # single threaded for loop scoring
+    """Run the real-time prediction on a DataRobot model deployment on a single threaded instance
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the test data to be predicted on
+        pred_url (string): URL endpoint for the DataRobot deployment
+        token (string): API token required for calling the DataRobot API
+    """
     for df_chunk in df:
         pred_resp = rtpred(pred_url, df_chunk.to_csv(), token)
         print(pred_resp.text)
 
 def multi_threaded_batch_processing(df, pred_url, token):
-    # multi-threaded for loop scoring
+    """Run the real-time prediction on a DataRobot model deployment using multiple threads for improved efficiency
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the test data to be predicted on
+        pred_url (string): URL endpoint for the DataRobot deployment
+        token (string): API token required for calling the DataRobot API
+    """
     threads = []
     pool = ThreadPool()
 
-    for i, df_chunk in enumerate(df):
+    for _, df_chunk in enumerate(df):
         async_result = pool.apply_async(rtpred, (pred_url, df_chunk.to_csv(), token))
         threads.append(async_result)
-        # print(async_result)
 
     for thread in threads:
+        # responses from each thread
         print(thread.get().text)
 
 def main():
-    parser = argparse.ArgumentParser(description='Example program with flag arguments')
+    parser = argparse.ArgumentParser(description='Predict on models deployed on DataRobot or DRUM')
     parser.add_argument('-m', '--mode', default='single', help='Specify the real-time prediction mode. Specify "single" for single-threaded processing, or "multi" for multithreaded processing')
-    parser.add_argument('-p', '--path', default='data/prepared_data.csv', help='Specify the path to the .txt file containing the data')
-    parser.add_argument('-d', '--development', action='store_true', help='Specify whether development mode should be enabled')
+    parser.add_argument('-p', '--path', default='data/test/prepared_data.csv', help='Specify the path to the csv file containing the data')
+    parser.add_argument('-dev', '--development', action='store_true', help='Flag indicating that development mode should be enabled. Calling this flag would set the endpoint URL to a local instance, while excluding this flag would set the endpoint to a live DataRobot deployment')
     parser.add_argument('-c', '--chunksize', default='1', help='Specify the size of the chunk to be used such that each chunk would be less than 50MB')
+    parser.add_argument('-d', '--deployment', default='655ac667351611d5b8184ac1', help='Specify the deployment ID of the deployment hosted on DataRobot')
 
     args = parser.parse_args()
 
-    # Access the parsed arguments
     mode = args.mode
     path = args.path
     development = args.development
     chunksize = args.chunksize
+    deployment_id = args.deployment
 
-    # Print the arguments
+    # print the input arguments for verification
     print(f"Mode: {mode}")
     print(f"Path: {path}")
     print(f"Development: {development}")
     print(f"Chunk size: {chunksize}")
+    print(f"Deployment ID: {deployment_id}")
 
-    token = 'NjUzZjYyNjRhZTIzYTc4NWU0MTg0YmQ4OkdJaThFU25NbWg1bmtFSENORVB3TkpVUlFvZG4vT01QQmh4NmNhdy9Nam89'
+    config = dotenv_values(".env")
+
+    token = config.get('TOKEN')
+
     endpoint = 'app.imda-tal-ent.sg.datarobot.com'
-    deployment_id = "655ac667351611d5b8184ac1"
 
+    # choose a prediction url based on whether we are in development mode
     if development:
         pred_url = 'http://localhost:6789/predict'
     else:

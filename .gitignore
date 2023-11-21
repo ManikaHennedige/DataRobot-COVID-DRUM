@@ -1,2 +1,5 @@
 env/
+windows_env/
+linux_env/
 __pycache__/
+.env

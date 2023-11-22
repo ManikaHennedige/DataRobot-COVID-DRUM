@@ -64,7 +64,6 @@ def main():
     parser.add_argument('-p', '--path', default='data/test/prepared_data.csv', help='Specify the path to the csv file containing the data')
     parser.add_argument('-dev', '--development', action='store_true', help='Flag indicating that development mode should be enabled. Calling this flag would set the endpoint URL to a local instance, while excluding this flag would set the endpoint to a live DataRobot deployment')
     parser.add_argument('-c', '--chunksize', default='1', help='Specify the size of the chunk to be used such that each chunk would be less than 50MB')
-    parser.add_argument('-d', '--deployment', default='655ac667351611d5b8184ac1', help='Specify the deployment ID of the deployment hosted on DataRobot')
 
     args = parser.parse_args()
 
@@ -72,20 +71,23 @@ def main():
     path = args.path
     development = args.development
     chunksize = args.chunksize
-    deployment_id = args.deployment
-
-    # print the input arguments for verification
-    print(f"Mode: {mode}")
-    print(f"Path: {path}")
-    print(f"Development: {development}")
-    print(f"Chunk size: {chunksize}")
-    print(f"Deployment ID: {deployment_id}")
 
     config = dotenv_values(".env")
 
     token = config.get('TOKEN')
+    endpoint = config.get('ENDPOINT')
+    deployment_id = config.get('DEPLOYMENT_ID')
 
-    endpoint = 'app.imda-tal-ent.sg.datarobot.com'
+    # print the input & loaded arguments for verification
+    print(f"Mode: {mode}")
+    print(f"Path: {path}")
+    print(f"Development Mode: {development}")
+    print(f"Chunk Size: {chunksize}")
+    print(f"Endpoint: {endpoint}")
+    print(f"Deployment ID: {deployment_id}")
+    print(f"API Token Provided: {token != "" and token != None}")
+
+
 
     # choose a prediction url based on whether we are in development mode
     if development:

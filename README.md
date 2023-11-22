@@ -182,5 +182,3 @@ Create a new custom environment from the DataRobot UI, then drop the 'environmen
 Create a new model, making sure to choose the target type as unstructured. Use the 'file upload' feature instead of the folder upload feature to ensure that the custom.py and model.h5 files are accessible from the root directory. The 'folder upload' feature can be used for dependencies (e.g. in this case the 'utils' folder can be uploaded via this method).
 
 Test the model, then deploy.
-
-

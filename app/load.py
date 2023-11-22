@@ -75,7 +75,7 @@ def main():
     print(f"Chosen image directory: {img_dir}")
 
 
-    generate_data(file_dir=file_dir, img_dir="D:/Downloads/COVID_Data/2A_images")
+    generate_data(file_dir=file_dir, img_dir=img_dir)
     join_files(file_dir=file_dir)
 
 

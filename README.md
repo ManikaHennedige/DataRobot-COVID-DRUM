@@ -21,7 +21,7 @@ DRUM, or DataRobot User Models, provide a way for users to test custom models an
 
 ### 'environment' folder
 
-This folder was obtained through copying a folder from <a href="https://github.com/datarobot/datarobot-user-models/tree/master/public_dropin_environments/python3_keras">DataRobot's DRUM repository</a>
+This folder was obtained through copying a folder from [DataRobot's DRUM Repository](https://github.com/datarobot/datarobot-user-models/tree/master/public_dropin_environments/python3_keras)
 
 The function and purpose of the files are outlined below:
 
@@ -96,40 +96,89 @@ Scripts run in this virtual environment will usually only come from the 'app' fo
 
 ### Loading data into compatible csv files
 
-The 'load.py' file contains scripts // stopped here
+The 'load.py' file contains scripts and a corresponding CLI application for users to generate a csv file for prediction. Before running the script, ensure that the following conditions are met:
 
-### Running the custom model in the custom environment in server mode (supporting real-time predictions)
-Run the following command to run the model using DRUM inside a Docker environment that DRUM creates using the Docker context files provided in the Environment/ folder:
+1. data.txt file
 
-```drum server --code-dir model/ --target-type binary --positive-class-label '1' --negative-class-label '0' --address localhost:6789 --docker environment```
+    A data.txt file containing prediction details should be created and placed into a named folder inside the 'app/data' directory. The name of this folder will be required to run the CLI applications.
+    
+    This file should contain at least one line of data, with each line containing the following information in the format specified below:
 
-#### address
-The port number is up to user's discretion. In this case the server is running on localhost:6789
+    ```{image_file_name} {result class} {x1} {y1} {x2} {y2}```
 
-#### --docker
-Specifies the location of the Docker context files. Alternatively, you could build a Docker image and specify the location of the tarball
+    An example line in the file could be:
 
-### Making predictions
-For this model, there are 2 inputs:
-1. Image file
-    - Image (usually .png) file containing the CT Scan that is being predicted
+    ```pred_img.png 0 15 100 200 400```
 
-1. Label file
-    - Label (usually .txt) file containing information about the image (i.e. bounding box, ground truth label, associated file name) in each line. In this case we are only going for single real-time predictions; there is always only one line of data present in this file
+    - The result class (indicating whether the image contains a COVID positive patient or not) should be either 0, 1 or 2, similar to the original dataset
 
-To cater to this, the server accepts input in the HTML form-data parameter, with 'X' as the key and a file as the value.
-A zip file containing an image file and label file should be provided in the abovementioned data parameter. The files should follow the following naming conventions:
-1. Image file: image.png
-1. Label file: label.txt
-1. Zip Archive: data.zip (not necessary)
+1. image folder
 
-This can be accomplished with API testing tools like Postman.
+    All the images referenced in the above created data.txt file should be available in a certain folder. There is no specific guideline for where this folder should be located. The absolute path to the folder will be required to run the 'load.py' CLI application.
+
+Run the load.py CLI application to generate the necessary files for prediction:
+
+```python load.py -p [name of folder containing 'data.txt'] -i [name of folder containing images]```
+
+For example, if 'data.txt' is stored inside 'data/test1' folder, and images are stored inside 'C:\Users\SGH\COVID_Data\2A_images', the command would be:
+
+```python load.py -p 'test1' -i 'C:\Users\SGH\COVID_Data\2A_images'```
+
+Three files will be generated inside the 'test1' folder:
+
+1. prepared_data.csv
+
+    This contains the data for prediction on the DataRobot/DRUM server
+
+1. actuals.csv
+
+    This contains actuals for upload to DataRobot - this file is required for accuracy metrics to be generated.
+
+1. merged_file.csv
+
+    This contains the merged data from both 'prepared_data.csv' and 'actuals.csv'.
+    
+### Running real time predictions on the DRUM server
+
+Now that the required data has been generated, we may perform predictions with this data using the custom model in the custom environment.
+
+1. Run the model using DRUM, using the model specified in the 'model/' directory and the environment specified in the 'environment/' directory. Run the command below from the root project directory:
+
+    ```drum server --code-dir model/ --target-type binary --positive-class-label '1' --negative-class-label '0' --address localhost:6789 --docker environment```
+
+1. Make a prediction on the DRUM server by running the following command from inside the 'app' folder:
+
+    ```python predict.py -m [multiprocessing mode of prediction (either 'single' or 'multi')] -p [name of folder containing the generated 'prepared_data.csv file] -dev```
+
+    For example, if the 'prepared_data.csv' file is stored inside 'data/test1', and we choose to run this model in a singlethreaded manner, the command would be:
+
+    ```python predict.py -m single -p test1 -dev```
+
+### Making real time predictions on the model deployed on the DataRobot server
+
+1. The environment and model must be uploaded and deployed on the DataRobot server before we may predict on the server. For instructions on uploading to DataRobot, refer to the [next section](#uploading-to-datarobot)
+
+1. Make a copy of the .env-sample file, renaming it to '.env'. Make sure that the endpoint, deployment ID and API token is provided in this file.
+
+1. Run the following command from inside the 'app' folder:
+
+    ```python predict.py -m [multiprocessing mode of prediction (either 'single' or 'multi')] -p [name of folder containing the generated 'prepared_data.csv file]```
+
+    For example, if the 'prepared_data.csv' file is stored inside 'data/test1', and we choose to run this model in a singlethreaded manner, the command would be:
+
+    ```python predict.py -m single -p test1```
+
 
 ## Uploading to DataRobot
+
+Once the model and environment have been tested using the local DRUM prediction server, the environment and model may then be uploaded to DataRobot
+
 ### Creating a new Custom Environment
+
 Create a new custom environment from the DataRobot UI, then drop the 'environment.zip' file into the 'Docker context' field. The environment will be created using the context provided.
 
 ### Creating a new custom Model
+
 Create a new model, making sure to choose the target type as unstructured. Use the 'file upload' feature instead of the folder upload feature to ensure that the custom.py and model.h5 files are accessible from the root directory. The 'folder upload' feature can be used for dependencies (e.g. in this case the 'utils' folder can be uploaded via this method).
 
 Test the model, then deploy.

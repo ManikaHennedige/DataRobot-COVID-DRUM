@@ -66,11 +66,11 @@ This folder contains two CLI applications that can be run to generate data, then
 
 1. load.py
 
-    This script is customized for use with the COVID CT-Scan project. It allows users to generate 3 csv files based on a 'data.txt' file, which can then be uploaded to DataRobot for testing and data quality metric tracking. This script requires all COVID data images to be accessible at a specified location.
+    This script is customized for use with the COVID CT-Scan project. It allows users to generate 3 csv files based on a 'data.txt' file, which can then be uploaded to DataRobot for testing and data quality metric tracking.
 
 1. predict.py
 
-    This script is adapted from the official DR script, as is more generally usable. It allows real-time predictions to be made on the DataRobot or DRUM platform.
+    This script is adapted from the official DR script, and is more generally usable. It allows real-time predictions to be made on the DataRobot or DRUM platform.
 
 ## Prerequisites
 

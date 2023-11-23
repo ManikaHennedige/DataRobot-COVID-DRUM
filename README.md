@@ -171,14 +171,14 @@ Now that the required data has been generated, we may perform predictions with t
 
 ## Uploading to DataRobot
 
-Once the model and environment have been tested using the local DRUM prediction server, the environment and model may then be uploaded to DataRobot
+Once the model and environment have been tested using the local DRUM prediction server, the environment and model may then be uploaded to DataRobot. The uploading process is quite simple, and detailed instructions are available on the DataRobot server website.
 
-### Creating a new Custom Environment
+### Creating a new custom environment in DataRobot
 
-Create a new custom environment from the DataRobot UI, then drop the 'environment.zip' file into the 'Docker context' field. The environment will be created using the context provided.
+Create a new custom environment from the DataRobot UI's 'Custom environments' area, then drop the 'environment.zip' file into the 'Docker context' field. The environment will be created using the context provided. It is also possible to upload a tarball containing the docker environment, but the context would need to be specified too
 
-### Creating a new custom Model
+### Creating a new custom model in DataRobot
 
-Create a new model, making sure to choose the target type as unstructured. Use the 'file upload' feature instead of the folder upload feature to ensure that the custom.py and model.h5 files are accessible from the root directory. The 'folder upload' feature can be used for dependencies (e.g. in this case the 'utils' folder can be uploaded via this method).
+Create a new model from the DataRobot UI's 'custom model workshop', making sure to choose the target type as unstructured. Use the 'file upload' feature instead of the folder upload feature to ensure that the custom.py and model.h5 files are accessible from the root directory. The 'folder upload' feature can be used for dependencies (e.g. in this case the 'utils' folder can be uploaded via this method).
 
 Test the model, then deploy.

@@ -85,7 +85,7 @@ def main():
     print(f"Chunk Size: {chunksize}")
     print(f"Endpoint: {endpoint}")
     print(f"Deployment ID: {deployment_id}")
-    print(f"API Token Provided: {token != "" and token != None}")
+    print(f"API Token Provided: {token != '' and token != None}")
 
 
 

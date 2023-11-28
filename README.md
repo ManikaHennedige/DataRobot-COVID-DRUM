@@ -152,7 +152,7 @@ Now that the required data has been generated, we may perform predictions with t
 
     For example, if the 'prepared_data.csv' file is stored inside 'data/test1', and we choose to run this model in a singlethreaded manner, the command would be:
 
-    ```python predict.py -m single -p test1 -dev```
+    ```python predict.py -m single -p data/test1/prepared_data.csv -dev```
 
 ### Making real time predictions on the model deployed on the DataRobot server
 
@@ -166,7 +166,7 @@ Now that the required data has been generated, we may perform predictions with t
 
     For example, if the 'prepared_data.csv' file is stored inside 'data/test1', and we choose to run this model in a singlethreaded manner, the command would be:
 
-    ```python predict.py -m single -p test1```
+    ```python predict.py -m single -p data/test1/prepared_data.csv```
 
 
 ## Uploading to DataRobot

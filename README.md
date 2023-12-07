@@ -21,7 +21,7 @@ DRUM, or DataRobot User Models, provide a way for users to test custom models an
 
 ### 'environment' folder
 
-This folder was obtained through copying a folder from [DataRobot's DRUM Repository](https://github.com/datarobot/datarobot-user-models/tree/master/public_dropin_environments/python3_keras)
+This folder was obtained through copying a folder from [DataRobot's DRUM Repository](https://github.com/datarobot/datarobot-user-models/tree/master/public_dropin_environments/python3_keras). These individual files downloaded from the repository should be stored in a folder named 'environment'.
 
 The function and purpose of the files are outlined below:
 
@@ -175,10 +175,20 @@ Once the model and environment have been tested using the local DRUM prediction 
 
 ### Creating a new custom environment in DataRobot
 
-Create a new custom environment from the DataRobot UI's 'Custom environments' area, then drop the 'environment.zip' file into the 'Docker context' field. The environment will be created using the context provided. It is also possible to upload a tarball containing the docker environment, but the context would need to be specified too
+Ensure that the 'environment' folder is zipped and renamed to 'environment.zip'.
+If the zipping and naming conventions are strictly adhered to, the following file structure should be observed:
+```
+| environment.zip
+|--| environment/
+|----| __init__.py
+|----| Dockerfile
+|----| requirements.txt
+|----| ...
+```
+Create a new custom environment from the DataRobot UI's 'Custom environments' area from the 'Model Registry' page. then drop the 'environment.zip' file into the 'Docker context' field. The environment will be created using the context provided. It is also possible to upload a tarball containing the docker environment, but the context would need to be specified too.
 
 ### Creating a new custom model in DataRobot
 
 Create a new model from the DataRobot UI's 'custom model workshop', making sure to choose the target type as unstructured. Use the 'file upload' feature instead of the folder upload feature to ensure that the custom.py and model.h5 files are accessible from the root directory. The 'folder upload' feature can be used for dependencies (e.g. in this case the 'utils' folder can be uploaded via this method).
 
-Test the model, then deploy.
+Test the model, then deploy!

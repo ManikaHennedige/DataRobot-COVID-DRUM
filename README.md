@@ -76,21 +76,25 @@ This folder contains two CLI applications that can be run to generate data, then
 
 Note that DRUM requires a Linux environment to run. If on Windows, use Windows Subsystem for Linux (WSL)
 
-### Installing DRUM
-DRUM should be installed in the global Python environment (within Linux/WSL on Windows):
-
-```pip install datarobot-drum```
-
 ### Creating a virtual environment (optional)
-A virtual environment may be created after installing DRUM:
+A virtual environment in Linux may be created:
 
 ```virtualenv wsl_env```
 
 ```source wsl_env/bin/activate```
 
-Scripts run in this virtual environment will usually only come from the 'app' folder - dependencies in the 'environment' folder do not necessarily need to be installed here. Install requirements located in the 'app' folder
+### Installing DRUM
+Install DRUM in either this virtual environment or the global Python environment (within Linux/WSL on Windows):
+
+```pip install datarobot-drum```
+
+### Installing package dependencies
+
+Scripts run in this virtual environment will usually only come from the 'app' folder - dependencies in the 'environment' folder do not necessarily need to be installed here. Install requirements located in the 'app' folder:
 
 ```pip install app/requirements.txt```
+
+Note that it would also be possible for a windows virtual environment to be created using the 'virtualenv' tool as well, with the requirements being installed into this environment instead. Note that 
 
 ## Use
 

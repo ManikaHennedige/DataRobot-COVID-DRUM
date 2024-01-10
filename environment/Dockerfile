@@ -12,6 +12,7 @@ RUN pip3 install -U pip && \
     pip3 install -U --upgrade-strategy eager --no-cache-dir -r dr_requirements.txt  && \
     rm -rf dr_requirements.txt
 
+# for running opencv
 RUN apt-get update && apt-get install -y libglib2.0-0 libgl1-mesa-glx && rm -rf /var/lib/apt/lists/*
 
 # Install the list of custom Python requirements, e.g. keras, xgboost, etc.
